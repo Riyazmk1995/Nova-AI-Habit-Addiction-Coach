@@ -1,0 +1,473 @@
+/* Nova Theme Variables & Main Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --bg-primary: #090D1A;
+    --bg-secondary: #0F172A;
+    --bg-glass: rgba(15, 23, 42, 0.65);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --accent-purple: #8B5CF6;
+    --accent-pink: #EC4899;
+    --accent-blue: #06B6D4;
+    --accent-emerald: #10B981;
+    --accent-rose: #F43F5E;
+    --shadow-main: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Global Font Override */
+.stApp {
+    background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(6, 182, 212, 0.05) 0px, transparent 50%);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    color: #FFFFFF !important;
+}
+
+/* Hide default streamlit headers/footers for a standalone app feel */
+header {visibility: hidden;}
+footer {visibility: hidden;}
+#MainMenu {visibility: hidden;}
+
+/* Custom Sleek Sidebar */
+[data-testid="stSidebar"] {
+    background-color: var(--bg-secondary) !important;
+    border-right: 1px solid var(--border-glass) !important;
+}
+
+/* Force Light text for Sidebar widgets */
+[data-testid="stSidebar"] label, 
+[data-testid="stSidebar"] span, 
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-main);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.2);
+}
+
+/* Ensure paragraph, list items, and main body fonts are readable */
+p, li, span, .stMarkdown {
+    color: var(--text-primary) !important;
+}
+
+/* Explicit Overrides for Labels to ensure they are visible on Dark Background */
+label, .stWidgetLabel, [data-testid="stWidgetLabel"] {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+}
+
+/* ==========================================
+   DROPDOWN & SELECTBOX OVERRIDES
+   ========================================== */
+
+/* Style the selectbox control background to remain dark slate */
+div[data-baseweb="select"] > div {
+    background-color: #0F172A !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+}
+
+/* Control closed selectbox text color */
+div[data-baseweb="select"] * {
+    color: var(--text-primary) !important;
+}
+
+/* Style selectbox placeholders specifically to be readable slate-gray */
+div[data-baseweb="select"] [data-placeholder="true"], 
+div[data-baseweb="select"] div[aria-disabled="true"] {
+    color: var(--text-secondary) !important;
+    opacity: 0.8 !important;
+}
+
+/* Force placeholder colors inside dropdown search input boxes */
+div[data-baseweb="select"] input::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+/* Expanded Dropdown Menu Popover background and styling */
+div[data-baseweb="popover"] {
+    background-color: #0F172A !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+div[role="listbox"] {
+    background-color: #0F172A !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+div[role="option"], 
+div[data-baseweb="popover"] li {
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
+    padding: 10px 16px !important;
+    transition: all 0.2s ease !important;
+    font-family: var(--font-body);
+}
+
+div[role="option"]:hover, 
+div[role="option"][aria-selected="true"],
+div[data-baseweb="popover"] li:hover,
+div[data-baseweb="popover"] li[aria-selected="true"] {
+    background-color: var(--accent-purple) !important;
+    color: #FFFFFF !important;
+}
+
+/* ==========================================
+   BUTTON STYLE OVERRIDES
+   ========================================== */
+
+/* Secondary Button Overrides */
+button[kind="secondary"] {
+    background-color: #1E293B !important;
+    color: #F8FAFC !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out !important;
+    font-weight: 500 !important;
+    padding: 8px 16px !important;
+}
+
+button[kind="secondary"]:hover {
+    background-color: #334155 !important;
+    border-color: var(--accent-purple) !important;
+    color: #FFFFFF !important;
+}
+
+/* Primary and Form Submit Button Overrides */
+button[kind="primary"], 
+button[data-testid="stFormSubmitButton"] {
+    background: linear-gradient(135deg, var(--accent-purple) 0%, #6D28D9 100%) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25) !important;
+}
+
+button[kind="primary"]:hover,
+button[data-testid="stFormSubmitButton"]:hover {
+    background: linear-gradient(135deg, #9D7BFC 0%, var(--accent-purple) 100%) !important;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45) !important;
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Slider values styling */
+div[data-testid="stSlider"] div, 
+div[data-testid="stSlider"] span {
+    color: var(--text-primary) !important;
+}
+
+/* Chat Input styling */
+textarea[data-testid="stChatInputTextArea"] {
+    color: var(--text-primary) !important;
+    background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* Form container overrides */
+div[data-testid="stForm"] {
+    border: 1px solid var(--border-glass) !important;
+    background: var(--bg-glass) !important;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+/* Metrics Dashboard Cards */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.metric-card-custom {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-main);
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+}
+
+.metric-value {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #FFFFFF, #D8B4FE);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 8px 0;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* AI Coach Conversational Interfaces */
+.chat-container {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 20px;
+    max-height: 550px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.chat-bubble {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+
+.chat-bubble.user {
+    justify-content: flex-end;
+}
+
+.bubble-content {
+    max-width: 75%;
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.chat-bubble.assistant .bubble-content {
+    background: rgba(30, 41, 59, 0.8);
+    color: var(--text-primary) !important;
+    border-top-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chat-bubble.user .bubble-content {
+    background: linear-gradient(135deg, var(--accent-purple) 0%, #6D28D9 100%);
+    color: #FFFFFF !important;
+    border-top-right-radius: 4px;
+}
+
+/* Pulsing Emergency SOS Button */
+.sos-button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.sos-button {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-rose) 0%, #BE123C 100%);
+    color: white !important;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+    animation: pulse-rose 2s infinite;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.sos-button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #FF5A79 0%, #E11D48 100%);
+    box-shadow: 0 0 30px rgba(244, 63, 94, 0.6);
+}
+
+@keyframes pulse-rose {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 25px rgba(244, 63, 94, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+    }
+}
+
+/* Breathing Visualizer Tool */
+.breath-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: rgba(15, 23, 42, 0.8);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 20px;
+}
+
+.breathing-ring-outer {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(6, 182, 212, 0.05);
+    border: 2px dashed rgba(6, 182, 212, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.breathing-circle-fill {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-blue) 0%, rgba(6, 182, 212, 0.4) 100%);
+    box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+    transition: all 4s ease-in-out;
+}
+
+/* Classes to toggle via python scripting logic */
+.inhale {
+    transform: scale(1.9);
+}
+
+.exhale {
+    transform: scale(1.0);
+}
+
+.hold {
+    box-shadow: 0 0 50px rgba(139, 92, 246, 0.8);
+    background: radial-gradient(circle, var(--accent-purple) 0%, rgba(139, 92, 246, 0.4) 100%);
+}
+
+.breathing-instruction {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-blue) !important;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+/* Citation Links & Search Results Grounding Styles */
+.citation-container {
+    background: rgba(30, 41, 59, 0.4);
+    border-left: 4px solid var(--accent-blue);
+    padding: 10px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 10px;
+    font-size: 0.875rem;
+}
+
+.citation-title {
+    font-weight: 600;
+    color: var(--accent-blue) !important;
+    margin-bottom: 4px;
+}
+
+.citation-link {
+    color: var(--text-primary) !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.citation-link:hover {
+    color: var(--accent-blue) !important;
+    text-decoration: underline;
+}
+
+/* Custom Milestones badges */
+.milestone-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.badge-locked {
+    background: rgba(30, 41, 59, 0.5);
+    color: var(--text-muted) !important;
+    border: 1px dashed var(--border-glass);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-unlocked {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+    color: #34D399 !important;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
+}
