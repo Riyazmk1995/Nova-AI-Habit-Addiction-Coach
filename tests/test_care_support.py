@@ -1,6 +1,8 @@
 import pytest
 
 from care_support import (
+    build_google_places_url,
+    build_overpass_query,
     build_search_query,
     calculate_distance_km,
     city_hint,
@@ -86,6 +88,24 @@ def test_sort_results_by_distance_sorts_nearest_first():
 
     assert sorted_places[0]["title"] == "Near Place"
     assert sorted_places[1]["title"] == "Far Place"
+
+
+def test_build_overpass_query_contains_radius_and_target_tags():
+    query = build_overpass_query(12.9716, 77.5946, 25, "psychiatrist")
+
+    assert "around:25000" in query
+    assert '["amenity"="clinic"]' in query
+    assert '["amenity"="hospital"]' in query
+    assert "out center 40" in query
+
+
+def test_build_google_places_url_contains_key_and_location():
+    url = build_google_places_url(12.9716, 77.5946, 25000, "clinic")
+
+    assert "maps.googleapis.com" in url
+    assert "location=12.9716,77.5946" in url
+    assert "radius=25000" in url
+    assert "keyword=clinic" in url
 
 
 def test_build_search_query_rejects_missing_city():

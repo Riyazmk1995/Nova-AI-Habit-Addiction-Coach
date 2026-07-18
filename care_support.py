@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import os
 from math import atan2, cos, radians, sin, sqrt
 from typing import Any
 
 import requests
 
 NOMINATIM_SEARCH_URL = "https://nominatim.openstreetmap.org/search"
+OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+GOOGLE_PLACES_BASE_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
 DEFAULT_USER_AGENT = "Nova-AI-Habit-Addiction-Coach"
 
 
@@ -18,6 +21,61 @@ def build_search_query(city: str, specialty: str) -> str:
     if not specialty:
         specialty = "doctor clinic hospital psychiatrist psychologist"
     return f"{specialty} in {city}"
+
+
+def build_overpass_query(lat: float, lon: float, radius_km: int, specialty: str) -> str:
+    """Build an Overpass query that targets likely care-related OSM amenities around a point."""
+    radius_m = max(5000, int(radius_km * 1000))
+    specialty = (specialty or "").strip().lower()
+
+    tag_pairs: list[tuple[str, str]] = [
+        ("amenity", "clinic"),
+        ("amenity", "hospital"),
+    ]
+
+    if specialty in {"psychologist", "psychiatrist", "therapist"}:
+        tag_pairs.extend([
+            ("healthcare", "psychotherapist"),
+            ("healthcare", "psychiatrist"),
+        ])
+    elif specialty in {"doctor", "clinic", "hospital"}:
+        tag_pairs = [
+            ("amenity", "clinic"),
+            ("amenity", "hospital"),
+            ("healthcare", "doctor"),
+        ]
+
+    unique_pairs: list[tuple[str, str]] = []
+    for pair in tag_pairs:
+        if pair not in unique_pairs:
+            unique_pairs.append(pair)
+
+    selectors = "\n".join(
+        f'  node["{key}"="{value}"](around:{radius_m},{lat},{lon});'
+        for key, value in unique_pairs
+    )
+
+    return f"""
+[out:json][timeout:25];
+(
+{selectors}
+);
+out center 40;
+""".strip()
+
+
+def build_google_places_url(lat: float, lon: float, radius_m: int, keyword: str) -> str:
+    """Build a Google Places nearby-search URL using the configured API key when available."""
+    api_key = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_API_KEY") or "DEMO_API_KEY"
+
+    keyword = (keyword or "clinic").strip()
+    params = {
+        "location": f"{lat},{lon}",
+        "radius": str(max(1000, int(radius_m))),
+        "keyword": keyword,
+        "key": api_key,
+    }
+    return f"{GOOGLE_PLACES_BASE_URL}?" + "&".join(f"{k}={v}" for k, v in params.items())
 
 
 def normalize_place(item: dict[str, Any]) -> dict[str, Any]:
@@ -112,30 +170,87 @@ def search_nearby_care(
     center_lat: float | None = None,
     center_lon: float | None = None,
 ) -> list[dict[str, Any]]:
-    """Query the public Nominatim API for healthcare providers near a city and sort them by distance."""
-    query = build_search_query(city=city, specialty=specialty)
+    """Query Google Places first when configured, then fall back to public OpenStreetMap sources."""
     if center_lat is None or center_lon is None:
         center_lat, center_lon = geocode_place(city)
 
-    params = {
-        "q": query,
-        "format": "jsonv2",
-        "limit": str(max(1, min(limit, 10))),
-        "addressdetails": "1",
-    }
+    google_key = os.getenv("GOOGLE_PLACES_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
+    normalized: list[dict[str, Any]] = []
 
-    response = requests.get(
-        NOMINATIM_SEARCH_URL,
-        params=params,
-        headers={"User-Agent": DEFAULT_USER_AGENT},
-        timeout=12,
-    )
-    response.raise_for_status()
+    if google_key:
+        try:
+            places_url = build_google_places_url(center_lat, center_lon, radius_km * 1000, specialty)
+            places_response = requests.get(places_url, timeout=15)
+            places_response.raise_for_status()
+            payload = places_response.json()
+            for item in payload.get("results", [])[:limit]:
+                geometry = item.get("geometry") or {}
+                loc = geometry.get("location") or {}
+                normalized.append({
+                    "title": item.get("name") or "Healthcare provider",
+                    "display_name": item.get("vicinity") or item.get("name") or "Healthcare provider",
+                    "lat": loc.get("lat"),
+                    "lon": loc.get("lng"),
+                    "type": item.get("types", ["healthcare"])[0] if item.get("types") else "healthcare",
+                    "category": "place",
+                    "city": city,
+                    "state": "",
+                    "country": "",
+                    "phone": item.get("formatted_phone_number") or "",
+                    "website": item.get("website") or "",
+                })
+        except Exception:
+            normalized = []
 
-    payload = response.json()
-    normalized = [normalize_place(item) for item in payload]
+    if not normalized:
+        overpass_query = build_overpass_query(center_lat, center_lon, radius_km, specialty)
+        overpass_payload = {"data": overpass_query}
+
+        overpass_response = requests.post(
+            OVERPASS_URL,
+            data=overpass_payload,
+            headers={"User-Agent": DEFAULT_USER_AGENT},
+            timeout=20,
+        )
+        overpass_response.raise_for_status()
+
+        payload = overpass_response.json()
+        elements = payload.get("elements") or []
+        for item in elements:
+            tags = item.get("tags") or {}
+            display_name = tags.get("name") or tags.get("operator") or "Healthcare provider"
+            normalized.append({
+                "title": display_name,
+                "display_name": display_name,
+                "lat": item.get("lat") or item.get("center", {}).get("lat"),
+                "lon": item.get("lon") or item.get("center", {}).get("lon"),
+                "type": tags.get("amenity") or tags.get("healthcare") or "healthcare",
+                "category": "amenity",
+                "city": tags.get("city") or tags.get("town") or tags.get("village") or city,
+                "state": tags.get("state") or tags.get("province") or "",
+                "country": tags.get("country") or "",
+                "phone": tags.get("phone") or "",
+                "website": tags.get("website") or "",
+            })
+
+    if not normalized:
+        fallback_query = build_search_query(city=city, specialty=specialty)
+        fallback_params = {
+            "q": fallback_query,
+            "format": "jsonv2",
+            "limit": str(max(1, min(limit, 10))),
+            "addressdetails": "1",
+        }
+        fallback_response = requests.get(
+            NOMINATIM_SEARCH_URL,
+            params=fallback_params,
+            headers={"User-Agent": DEFAULT_USER_AGENT},
+            timeout=12,
+        )
+        fallback_response.raise_for_status()
+        normalized = [normalize_place(item) for item in fallback_response.json()]
+
     sorted_results = sort_results_by_distance(normalized, center_lat, center_lon)
-
     filtered = [item for item in sorted_results if item.get("distance_km") is not None and item.get("distance_km") <= radius_km]
     if filtered:
         return filtered[:limit]
