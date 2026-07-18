@@ -82,6 +82,27 @@ p, li, span, .stMarkdown {
     color: var(--text-primary) !important;
 }
 
+/* Accessibility improvements */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid rgba(139, 92, 246, 0.8) !important;
+    outline-offset: 3px !important;
+}
+
+[data-testid="stButton"] > button,
+[data-testid="stBaseButton-secondary"] > button,
+[data-testid="stBaseButton-primary"] > button {
+    min-height: 44px;
+}
+
+.stTabs [role="tab"] {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.9rem;
+}
+
 /* Explicit Overrides for Labels to ensure they are visible on Dark Background */
 label, .stWidgetLabel, [data-testid="stWidgetLabel"] {
     color: var(--text-primary) !important;
@@ -207,6 +228,12 @@ div[data-testid="stForm"] {
     background: var(--bg-glass) !important;
     border-radius: 16px;
     padding: 20px;
+}
+
+/* App containers and spacing for better readability */
+.main .block-container {
+    padding-top: 1.4rem;
+    padding-bottom: 2rem;
 }
 
 /* Metrics Dashboard Cards */

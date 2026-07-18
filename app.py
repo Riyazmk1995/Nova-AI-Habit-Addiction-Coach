@@ -8,6 +8,8 @@ import json
 import os
 import tomllib
 
+from care_support import calculate_distance_km, embed_map_url, geocode_place, search_nearby_care, sort_results_by_distance
+
 # ─────────────────────────────────────────────
 # PAGE CONFIG
 # ─────────────────────────────────────────────
@@ -76,6 +78,18 @@ def get_gemini_client():
     return genai.Client(api_key=GEMINI_API_KEY)
 
 client = get_gemini_client()
+
+if "gps_coords" not in st.session_state:
+    st.session_state.gps_coords = None
+
+try:
+    query_params = st.query_params
+    lat = query_params.get("lat")
+    lon = query_params.get("lon")
+    if lat and lon:
+        st.session_state.gps_coords = (float(lat), float(lon))
+except Exception:
+    pass
 
 NOVA_SYSTEM_PROMPT = (
     "You are Nova, an empathetic, highly skilled AI Cognitive Behavioral Therapy (CBT) and Habit Recovery Coach. "
@@ -428,12 +442,13 @@ if st.session_state.daily_nudge:
 # ─────────────────────────────────────────────
 # TABS
 # ─────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Dashboard",
     "💬 Nova Chat",
     "🚨 Craving SOS",
     "📈 Analytics",
-    "🗓️ Daily Check-In"
+    "🗓️ Daily Check-In",
+    "🩺 Care Finder"
 ])
 
 # ═══════════════════════════════════════════════
@@ -978,3 +993,136 @@ with tab5:
                 if craving_now >= 7:
                     st.warning("⚠️ High craving intensity detected! Head to the **🚨 Craving SOS** tab now.")
                 st.rerun()
+
+# ═══════════════════════════════════════════════
+# TAB 6 — NEARBY CARE FINDER
+# ═══════════════════════════════════════════════
+with tab6:
+    st.markdown("### 🩺 Nearby Help Dashboard")
+    st.caption("Find nearby help quickly with map-backed resources, distance sorting, and urgent support guidance.")
+
+    emergency_hotlines = [
+        ("🚨 Suicide & Crisis Lifeline", "988", "U.S. / Canada"),
+        ("🧠 Mental Health Crisis Line", "+91 9152987821", "India"),
+        ("🚑 Emergency Medical", "112", "India"),
+    ]
+
+    st.markdown("#### 🚨 Urgent Support")
+    for title, number, region in emergency_hotlines:
+        st.markdown(f"- {title}: {number} ({region})")
+
+    st.markdown("---")
+
+    st.markdown("#### 📍 Find nearby care")
+    st.components.v1.html(
+        """
+        <div style="background:rgba(15,23,42,0.75); border:1px solid rgba(139,92,246,0.25); border-radius:14px; padding:12px; margin-bottom:10px;">
+            <button id="geo-btn" style="border:none; border-radius:10px; padding:10px 14px; background:linear-gradient(135deg,#8B5CF6,#EC4899); color:white; font-weight:700; cursor:pointer;">📍 Use my location</button>
+            <div id="geo-status" style="margin-top:8px; color:#94A3B8; font-size:0.84rem;">This uses your browser’s geolocation to look up nearby care.</div>
+        </div>
+        <script>
+        const geoBtn = document.getElementById('geo-btn');
+        const geoStatus = document.getElementById('geo-status');
+        geoBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                geoStatus.textContent = 'Geolocation is not supported by this browser.';
+                return;
+            }
+            geoStatus.textContent = 'Getting your location…';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const params = new URLSearchParams(window.parent.location.search);
+                    params.set('lat', pos.coords.latitude.toFixed(5));
+                    params.set('lon', pos.coords.longitude.toFixed(5));
+                    window.parent.location.search = params.toString();
+                },
+                () => {
+                    geoStatus.textContent = 'Location access was denied. Please type a city instead.';
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
+        });
+        </script>
+        """,
+        height=110,
+    )
+
+    with st.form("care_finder_form"):
+        city = st.text_input("City or town", placeholder="e.g. Bengaluru")
+        radius_km = st.selectbox("Radius", [5, 10, 25], index=2)
+        specialty = st.selectbox(
+            "Care type",
+            ["psychologist", "psychiatrist", "therapist", "clinic", "hospital", "doctor"],
+        )
+
+        filter_chip = st.radio(
+            "Filter by support type",
+            options=["psychologist", "psychiatrist", "clinic", "hospital"],
+            horizontal=True,
+        )
+
+        submitted = st.form_submit_button("🔎 Find nearby care", type="primary", use_container_width=True)
+
+    if submitted:
+        if not city.strip() and st.session_state.gps_coords is None:
+            st.warning("Please enter a city or use your browser location so Nova can search nearby care.")
+        else:
+            with st.spinner("Searching nearby care providers…"):
+                try:
+                    center_lat = None
+                    center_lon = None
+                    if st.session_state.gps_coords:
+                        center_lat, center_lon = st.session_state.gps_coords
+                    else:
+                        center_lat, center_lon = geocode_place(city)
+
+                    results = search_nearby_care(
+                        city=city or "Current Location",
+                        specialty=specialty,
+                        radius_km=radius_km,
+                        limit=8,
+                        center_lat=center_lat,
+                        center_lon=center_lon,
+                    )
+                    results = sort_results_by_distance(results, center_lat, center_lon)
+                    filtered_results = [item for item in results if filter_chip in (item.get("type") or "") or filter_chip in (item.get("title") or "").lower()]
+                    results = filtered_results if filtered_results else results
+                except Exception as exc:
+                    st.error(f"Unable to load nearby care results right now: {exc}")
+                    results = []
+
+            if not results:
+                st.info("No nearby care matches were found for this search. Try a broader city name or a different specialty.")
+            else:
+                st.markdown("#### 📎 Sorted results (nearest first)")
+                for idx, item in enumerate(results):
+                    distance = item.get("distance_km")
+                    location_label = f"{item['city'] or 'Unknown'} • {item['state'] or ''}".strip(" • ")
+                    with st.container():
+                        st.markdown(f"""
+                        <div style="background:linear-gradient(135deg, rgba(139,92,246,0.12), rgba(15,23,42,0.82));
+                             border:1px solid rgba(139,92,246,0.25); border-radius:18px; padding:18px; margin-bottom:14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap;">
+                                <div>
+                                    <h4 style="margin:0 0 6px 0; color:#FFFFFF;">{item['title']}</h4>
+                                    <p style="margin:0 0 6px 0; color:#94A3B8; font-size:0.88rem;">{item['display_name']}</p>
+                                    <p style="margin:0 0 8px 0; color:#E2E8F0; font-size:0.86rem;">Type: {item['type']} • {location_label}</p>
+                                </div>
+                                <div style="background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.25); border-radius:999px; padding:6px 12px; color:#67E8F9; font-size:0.82rem; white-space:nowrap;">
+                                    {distance} km away
+                                </div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                        if item.get("website"):
+                            st.markdown(f"🔗 Website: [{item['website']}]({item['website']})")
+                        if item.get("phone"):
+                            st.markdown(f"📞 Phone: {item['phone']}")
+
+                        if item.get("lat") and item.get("lon"):
+                            map_url = embed_map_url(item["lat"], item["lon"])
+                            st.components.v1.iframe(map_url, height=280, scrolling=False)
+
+                        if idx != len(results) - 1:
+                            st.markdown("---")
