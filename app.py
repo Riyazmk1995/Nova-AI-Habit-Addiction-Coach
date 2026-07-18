@@ -6,6 +6,7 @@ from google.genai import types
 import datetime
 import json
 import os
+import tomllib
 
 # ─────────────────────────────────────────────
 # PAGE CONFIG
@@ -48,6 +49,18 @@ def _load_gemini_api_key():
                 return value.strip()
     except Exception:
         pass
+
+    secrets_path = os.path.join(os.path.dirname(__file__), ".streamlit", "secrets.toml")
+    if os.path.exists(secrets_path):
+        try:
+            with open(secrets_path, "rb") as f:
+                config = tomllib.load(f)
+            for secret_name in ("GEMINI_API_KEY", "GOOGLE_API_KEY"):
+                value = config.get(secret_name, "")
+                if isinstance(value, str) and value.strip():
+                    return value.strip()
+        except Exception:
+            pass
 
     return ""
 
