@@ -35,8 +35,18 @@ if _css:
 # ─────────────────────────────────────────────
 # GEMINI CLIENT — created once, reused across all reruns
 # ─────────────────────────────────────────────
-GEMINI_API_KEY = "AIzaSyB8m7Umln5gyEDBs8ZLf1vtHWCVECik7P8"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+if not GEMINI_API_KEY:
+    try:
+        GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        GEMINI_API_KEY = ""
+
 MODEL = "gemini-2.5-flash"
+
+if not GEMINI_API_KEY:
+    st.error("Missing Gemini API key. Set `GEMINI_API_KEY` in your Streamlit secrets or environment variables.")
+    st.stop()
 
 @st.cache_resource
 def get_gemini_client():
