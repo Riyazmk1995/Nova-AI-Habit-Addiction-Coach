@@ -1,107 +1,423 @@
-# Nova - AI Habit & Addiction Coach
+# 🧬 Nova – AI Habit & Addiction Coach
 
-Nova is a Streamlit-based AI habit recovery dashboard designed to help users manage and reduce harmful habits using evidence-based coaching techniques, live analytics, and Gemini-powered assistance.
+> **An AI-powered recovery companion that helps individuals build healthier habits using Cognitive Behavioral Therapy (CBT), Motivational Interviewing, behavioral analytics, and Google's Gemini AI.**
 
-## Overview
+<p align="center">
 
-Nova combines:
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red?logo=streamlit)
+![Gemini](https://img.shields.io/badge/Google-Gemini%202.5-blue?logo=google)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-- AI-guided habit coaching through Gemini
-- CBT-inspired recovery support
-- A daily check-in flow for personalized nudges
-- Craving logging and behavior analytics
-- Emergency coping tools for high-craving moments
+</p>
 
-The app is built for people working on habits such as:
+---
 
-- excessive screen time
-- smoking or nicotine use
-- procrastination
-- sugar or junk food cravings
-- alcohol or substance-related habits
-- other behavioral addictions
+# 🌟 Overview
 
-## Features
+**Nova** is an AI-powered Habit & Addiction Recovery Coach designed to provide personalized guidance, emotional support, and evidence-based recovery techniques.
 
-### Dashboard
-- Live clean streak timer
-- Craving incident logging
-- Recovery badges and progress tracking
-- Personalized AI recovery assessment
+Instead of simply tracking habits, Nova acts like a compassionate AI coach that helps users:
 
-### AI Chat
-- Real-time conversational support with Nova
-- Optional Google Search grounding for science-backed responses
-- Quick prompt suggestions for motivation and coping
+- Break unhealthy habits
+- Reduce addictive behaviors
+- Build positive routines
+- Handle cravings
+- Track recovery progress
+- Stay motivated every day
 
-### Craving SOS
-- Box breathing visual guide
-- 5-4-3-2-1 grounding exercise
-- Urge surfing technique
-- Immediate AI emergency coach for urgent cravings
+The application combines **Generative AI**, **Behavioral Psychology**, **CBT techniques**, and **interactive analytics** into one intelligent recovery platform.
 
-### Analytics
-- Craving intensity trend graph
-- Trigger analysis
+---
+
+# 🎯 Problem Statement
+
+Millions of people struggle with:
+
+- Smoking
+- Alcohol addiction
+- Excessive screen time
+- Social media addiction
+- Sugar cravings
+- Procrastination
+- Gaming addiction
+- Other behavioral habits
+
+Most habit trackers only record progress.
+
+Nova goes much further by providing:
+
+- Personalized AI coaching
+- Recovery planning
+- Crisis support
+- Daily motivation
+- Behavioral insights
+- Nearby professional care recommendations
+
+---
+
+# ✨ Key Features
+
+## 🤖 AI Recovery Coach
+
+Powered by **Google Gemini 2.5 Flash**
+
+Nova provides:
+
+- Personalized recovery plans
+- CBT-based coaching
+- Motivational Interviewing
+- Mindfulness guidance
+- Emotional support
+- Habit replacement suggestions
+
+---
+
+## 📅 Daily Recovery Check-In
+
+Users can log:
+
+- Mood
+- Energy level
+- Daily intention
+- Recovery goals
+
+Nova generates a personalized AI coaching message based on the user's emotional state.
+
+---
+
+## 📊 Recovery Dashboard
+
+Track progress using:
+
+- Clean streak timer
+- Craving history
+- Recovery badges
+- AI recovery assessment
+- Progress indicators
+
+---
+
+## 📈 Recovery Analytics
+
+Interactive Plotly dashboards provide insights into:
+
+- Craving intensity trends
 - Mood distribution
-- CBT tool usage breakdown
-- Full craving log export in the interface
+- Trigger analysis
+- CBT technique usage
+- Recovery progress over time
 
-### Daily Check-In
-- Mood and energy tracking
-- Daily intention setting
-- Personalized daily nudge from Nova
+---
 
-## Tech Stack
+## 🚨 Craving SOS Toolkit
 
-- Python
-- Streamlit
-- Pandas
-- Plotly
-- Google Generative AI SDK
-- Custom CSS styling for a modern UI
+During high craving moments Nova provides immediate support through:
 
-## Project Structure
+- 🫁 Box Breathing
+- 🌊 Urge Surfing
+- 🧠 5-4-3-2-1 Grounding Technique
+- Emergency AI coaching
 
-- `app.py` – Main Streamlit application logic
-- `style.css` – Custom styling and UI customization
-- `requirements.txt` – Python dependencies
+---
 
-## Setup
+## 🏆 Recovery Achievement System
 
-1. Clone or open this project folder.
-2. Create and activate a virtual environment.
-3. Install the dependencies:
+Users unlock milestones such as:
+
+- First Hour
+- Half Day
+- One Day
+- Three Days
+- One Week
+- Two Weeks
+
+to reinforce positive behavior.
+
+---
+
+## 📍 Nearby Professional Care Search
+
+Nova can help locate nearby:
+
+- Psychologists
+- Psychiatrists
+- Clinics
+- Hospitals
+- Therapists
+
+using:
+
+- Google Places API
+- OpenStreetMap
+- Nominatim Geocoding
+- Overpass API
+
+Results are automatically sorted by distance.
+
+---
+
+## 💾 Recovery Data Backup
+
+Users can:
+
+- Export recovery data as JSON
+- Restore previous sessions
+- Continue recovery seamlessly
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                   User
+                     │
+                     ▼
+          Streamlit Web Interface
+                     │
+     ┌───────────────┼────────────────┐
+     │               │                │
+     ▼               ▼                ▼
+ Gemini AI      Analytics Engine   Recovery Tracker
+     │               │                │
+     ▼               ▼                ▼
+ CBT Coach      Plotly Dashboard   Streak Manager
+     │
+     ▼
+ Emergency Recovery Support
+     │
+     ▼
+ Nearby Care Search
+ (Google Places + OpenStreetMap)
+```
+
+---
+
+# 🧠 AI Capabilities
+
+Nova uses Google's **Gemini 2.5 Flash** to provide:
+
+- Personalized recovery coaching
+- Motivational interviewing
+- Habit analysis
+- CBT recommendations
+- Mindfulness exercises
+- Scientific explanations
+- Recovery encouragement
+
+The assistant follows principles including:
+
+- Cognitive Behavioral Therapy (CBT)
+- Behavioral Activation
+- Motivational Interviewing
+- Compassionate communication
+- Evidence-based guidance
+
+---
+
+# 📂 Project Structure
+
+```
+Nova-AI-Habit-Addiction-Coach/
+│
+├── app.py                     # Main Streamlit application
+├── care_support.py            # Nearby care search utilities
+├── style.css                  # Custom UI styling
+├── requirements.txt
+│
+├── tests/
+│   └── test_care_support.py
+│
+├── .streamlit/
+│   └── config.toml
+│
+└── .github/
+    └── workflows/
+        └── python-tests.yml
+```
+
+---
+
+# 🛠️ Technology Stack
+
+| Category | Technologies |
+|-----------|--------------|
+| Language | Python |
+| Frontend | Streamlit |
+| AI Model | Google Gemini 2.5 Flash |
+| Visualization | Plotly |
+| Data Processing | Pandas |
+| Location Services | Google Places API |
+| Maps | OpenStreetMap |
+| Geocoding | Nominatim |
+| API Calls | Requests |
+| Testing | PyTest |
+| Styling | Custom CSS |
+
+---
+
+# ⚙️ Installation
+
+Clone the repository
+
+```bash
+git clone https://github.com/Riyazmk1995/Nova-AI-Habit-Addiction-Coach.git
+```
+
+Move into the project
+
+```bash
+cd Nova-AI-Habit-Addiction-Coach
+```
+
+Create virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate environment
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Run the App
+---
 
-From the project directory, run:
+# 🔑 Environment Variables
+
+Create a `.streamlit/secrets.toml`
+
+```toml
+GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+
+GOOGLE_PLACES_API_KEY="YOUR_GOOGLE_PLACES_API_KEY"
+```
+
+Alternatively use environment variables:
+
+```bash
+GEMINI_API_KEY=xxxxxxxx
+
+GOOGLE_PLACES_API_KEY=xxxxxxxx
+```
+
+---
+
+# ▶️ Run the Application
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the local Streamlit URL shown in the terminal.
+Open:
 
-## How to Use
+```
+http://localhost:8501
+```
 
-1. Complete the onboarding form with your name and habit information.
-2. Review your personalized AI recovery assessment.
-3. Log craving incidents on the Dashboard.
-4. Use the Craving SOS tab whenever you need immediate support.
-5. Visit the Analytics tab to understand behavioral patterns.
-6. Submit the Daily Check-In to receive a personalized coaching message.
+---
 
-## Notes
+# 🧪 Running Tests
 
-- The app uses Gemini for AI-generated coaching and analysis.
-- The recovery data can be exported/imported as JSON for backup and restore.
-- The UI styling is customized in `style.css` for a polished dark-mode experience.
+```bash
+pytest
+```
 
-## License
+---
 
-This project is provided for educational or personal use. Add a license if you plan to share or distribute it publicly.
+# 🚀 Future Enhancements
+
+- Voice conversation with Nova
+- Wearable device integration
+- Sleep tracking
+- Smart reminders
+- Therapist dashboard
+- Recovery community
+- AI relapse prediction
+- Multi-language support
+- Mobile application
+- Weekly PDF recovery reports
+
+---
+
+# 🔒 Responsible AI
+
+Nova is designed to support—not replace—professional medical or psychological care.
+
+The AI:
+
+- Avoids judgmental language
+- Encourages evidence-based recovery
+- Promotes healthy coping strategies
+- Suggests professional help when appropriate
+- Supports users with empathy and compassion
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+
+2. Create a feature branch
+
+```bash
+git checkout -b feature-name
+```
+
+3. Commit your changes
+
+```bash
+git commit -m "Added new feature"
+```
+
+4. Push
+
+```bash
+git push origin feature-name
+```
+
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is released under the **MIT License**.
+
+---
+
+# 👨‍💻 Author
+
+**Riyaz Khorasi**
+
+AI/ML Engineer | Generative AI | Agentic AI | LLMs | RAG | Multi-Agent Systems
+
+GitHub
+
+https://github.com/Riyazmk1995
+
+LinkedIn
+
+https://linkedin.com/in/riyazmk1995
+
+---
+
+⭐ If you found this project useful, consider giving it a **Star** on GitHub.
