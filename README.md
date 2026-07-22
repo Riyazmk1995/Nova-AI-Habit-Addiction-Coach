@@ -343,14 +343,6 @@ http://localhost:8501
 
 ---
 
-# 🧪 Running Tests
-
-```bash
-pytest
-```
-
----
-
 # 🚀 Future Enhancements
 
 - Voice conversation with Nova
