@@ -12,6 +12,16 @@
 
 </p>
 
+<p align="center">
+
+## 🚀 Live Demo
+
+### 👉 https://riyazmk1995-nova-ai-habit-addiction-coach-app-pp6mog.streamlit.app/
+
+⭐ **Try Nova instantly in your browser — no installation required!**
+
+</p>
+
 ---
 
 # 🌟 Overview
